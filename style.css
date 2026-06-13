@@ -222,11 +222,11 @@ body.ui-hidden .ui-layer {
 
 /* ── LEFT PANEL (TASKS) ── */
 .left-panel {
-    position: fixed;
-    top: 110px;       /* Aligns beautifully just below your top nav bar */
-    left: 20px;
+    position: fixed; 
+    top: 100px; /* Aligns perfectly right below your 80px Top Bar */
+    left: 20px; 
     z-index: 40;
-    transform: none;  /* Forcefully kills the vertical centering shift */
+    /* Removed transform: translateY(-50%); */
 }
 .todo-wrap {
     background: var(--glass-panel);
