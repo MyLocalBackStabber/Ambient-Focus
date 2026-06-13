@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambient Focus</title>
+    <link rel="icon" type="image/png" href="amf.png"> <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="bgDimmer"></div>
+
+<section id="clock-view" class="mode active-mode glass-panel active-view">
+    <div class="clock-wrap">
+        <div class="big-time" id="digital-clock">00:00:00</div>
+        <div class="big-date" id="clock-date"></div>
+    </div>
+</section>
+
+<section id="pomodoro-view" class="mode glass-panel">
+    <div class="clock-wrap">
+        <div class="pomo-meta">
+            <span class="pomo-label" id="pomo-label">FOCUS</span>
+            <div class="pomo-dots" id="pomoSessions"></div>
+        </div>
+        <div class="big-time" id="pomo-timer">25:00</div>
+        <div class="pomo-bar-wrap"><div class="pomo-bar" id="pomoBar"></div></div>
+        <div class="pomo-btns">
+            <button id="pomoToggleBtn" onclick="togglePomo()">START</button>
+            <button onclick="resetPomo()">RESET</button>
+        </div>
+    </div>
+</section>
+
+<section id="flip-view" class="mode glass-panel">
+    <div class="clock-wrap">
+        <div class="flip-row">
+            <div class="flip-col">
+                <button class="flip-arrow" onclick="adjustFlip('h',1)">↑</button>
+                <div class="flip-digit" id="flip-h">00</div>
+                <button class="flip-arrow" onclick="adjustFlip('h',-1)">↓</button>
+                <span class="flip-lbl">H</span>
+            </div>
+            <div class="flip-colon">:</div>
+            <div class="flip-col">
+                <button class="flip-arrow" onclick="adjustFlip('m',1)">↑</button>
+                <div class="flip-digit" id="flip-m">00</div>
+                <button class="flip-arrow" onclick="adjustFlip('m',-1)">↓</button>
+                <span class="flip-lbl">M</span>
+            </div>
+            <div class="flip-colon">:</div>
+            <div class="flip-col">
+                <button class="flip-arrow" onclick="adjustFlip('s',1)">↑</button>
+                <div class="flip-digit" id="flip-s">00</div>
+                <button class="flip-arrow" onclick="adjustFlip('s',-1)">↓</button>
+                <span class="flip-lbl">S</span>
+            </div>
+        </div>
+        <div class="pomo-btns">
+            <button id="flipToggleBtn" onclick="toggleFlip()">START</button>
+            <button onclick="resetFlip()">RESET</button>
+        </div>
+    </div>
+</section>
+
+<div class="top-bar ui-layer" id="topBar">
+    <div class="top-left">
+        <span class="brand">Ambient Focus </span>
+    </div>
+    <div class="top-right" >
+
+        <span class="datetime-sep">·</span>
+        <span class="datetime-date" id="badgeDate">FRI 20</span>
+    </div>
+</div>
+
+<div class="left-panel ui-layer" id="leftPanel">
+    <div class="todo-wrap">
+        <div class="todo-head">
+            <span class="todo-ttl">TASKS</span>
+            <button class="todo-clr" onclick="clearDoneTodos()">CLEAR</button>
+        </div>
+        <div class="todo-input-row">
+            <input id="todoInput" class="todo-input" placeholder="Add a new task...">
+            <button class="todo-plus" onclick="addTodo()">+</button>
+        </div>
+        <div class="todo-list" id="todoList"></div>
+    </div>
+</div>
+
+<div class="bottom-bar" id="bottomBar">
+    <div class="bb-left ui-layer">
+        <button class="bb-btn" id="settingsBtn" onclick="togglePanel('settingsPanel', event)" title="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="bb-btn" id="ambientBtn" onclick="togglePanel('ambientPanel', event)" title="Ambient Sounds">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        </button>
+        <button class="bb-btn" id="lofiBtn" onclick="togglePanel('lofiPanel', event)" title="Lofi Player">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+        </button>
+        <button class="bb-btn" id="wallpaperBtn" onclick="togglePanel('wallpaperPanel', event)" title="Wallpapers">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
+    </div>
+    
+    <div class="bb-right">
+        <button class="bb-btn hide-toggle" id="hideToggle" onclick="toggleUI()" title="Toggle UI">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+        <button class="bb-btn ui-layer" onclick="toggleFullscreen()" id="fullscreenBtn" title="Fullscreen">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+    </div>
+</div>
+
+
+</button>
+
+<div class="fpanel" id="settingsPanel">
+    <div class="fp-title">SETTINGS</div>
+    
+    <div class="fp-row" style="margin-top:10px;">
+        <span class="fp-label">BRIGHTNESS</span>
+        <span class="fp-val" id="brightVal">50%</span>
+    </div>
+    <input type="range" id="brightSlider" min="10" max="100" step="1" value="50">
+    
+    <div class="fp-row" style="margin-top:16px;">
+        <span class="fp-label">BACKGROUND BLUR</span>
+        <span class="fp-val" id="bgBlurVal">0px</span>
+    </div>
+    <input type="range" id="bgBlurSlider" min="0" max="40" step="1" value="0">
+
+    <div class="fp-row" style="margin-top:16px;">
+        <span class="fp-label">GLASS BLUR (UI)</span>
+        <span class="fp-val" id="boxBlurVal">30px</span>
+    </div>
+    <input type="range" id="boxBlurSlider" min="0" max="80" step="1" value="30">
+
+    <div class="fp-row" style="margin-top:16px;">
+        <span class="fp-label">FOCUS DURATION</span>
+        <span class="fp-val" id="pomoVal">25 min</span>
+    </div>
+    <input type="range" id="pomoSlider" min="5" max="60" step="5" value="25">
+    
+    <div class="fp-row" style="margin-top:18px;">
+    
+</div>
+</div>
+
+<div class="fpanel" id="ambientPanel">
+    <div class="fp-title">AMBIENT SOUNDS</div>
+    <div class="ambient-grid" id="ambGrid"></div>
+    <div class="fp-row" style="margin-top:16px;">
+        <span class="fp-label">MASTER VOLUME</span>
+        <span class="fp-val" id="ambVolVal">70%</span>
+    </div>
+    <input type="range" id="ambVolSlider" min="0" max="100" step="1" value="70">
+</div>
+
+<div class="fpanel" id="lofiPanel">
+    <div class="fp-title">LOFI PLAYER</div>
+    <div class="lofi-player">
+        <div class="lofi-info">
+            <span id="lofiTrackName">Track 1</span>
+            <span class="lofi-sub" id="lofiTrackSub">lofi / chill</span>
+        </div>
+        <div class="lofi-prog" id="lofiProgressWrap"><div id="lofiProgressBar"></div></div>
+        <div class="lofi-ctrls">
+            <span class="lofi-time" id="lofiCurrentTime">0:00</span>
+            <div class="lofi-btn-group">
+                <button class="lbtn" onclick="lofiPrev()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11 19V5L2 12l9 7zm2-14v14h2V5h-2zm4 0v14h2V5h-2z"/></svg>
+                </button>
+                <button class="lbtn play" id="lofiPlayBtn" onclick="lofiToggle()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button class="lbtn" onclick="lofiNext()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13 5v14l9-7-9-7zM9 5v14h2V5H9zm-4 0v14h2V5H5z"/></svg>
+                </button>
+            </div>
+            <span class="lofi-time" id="lofiDuration">0:00</span>
+        </div>
+    </div>
+    <div id="lofiTrackList" style="display:flex;flex-direction:column;gap:6px;margin-top:16px;"></div>
+    <div class="fp-row" style="margin-top:16px;">
+        <span class="fp-label">PLAYER VOLUME</span>
+        <span class="fp-val" id="lofiVolVal">60%</span>
+    </div>
+    <input type="range" id="lofiVolSlider" min="0" max="100" step="1" value="60">
+</div>
+
+<div class="fpanel wide" id="wallpaperPanel">
+    <div class="fp-title">WALLPAPER</div>
+    <div class="wp-grid" id="wallpaperGrid"></div>
+    <input type="file" id="bgUpload" accept="image/*" style="display:none">
+    
+    <div class="fp-row" style="margin-top:18px; margin-bottom:8px;">
+        <span class="fp-label">EXTERNAL URL</span>
+    </div>
+    <div class="todo-input-row">
+        <input type="text" id="extWallInput" class="todo-input" placeholder="https://images.unsplash.com/...">
+        <button class="todo-plus" style="font-size: 0.8rem; font-weight: 500; width: auto; padding: 0 14px;" onclick="setExternalWallpaper()">SET</button>
+    </div>
+</div>
+
+<audio id="alarm" src="alarm.mp3" preload="none"></audio>
+<div id="ambientAudios"></div>
+<audio id="lofiAudio" preload="none"></audio>
+<script src="script.js"></script>
+<div class="mode-switcher-wrap ui-layer">
+    <div class="mode-switcher">
+        <button class="mode-btn active" id="modeBtn0" onclick="switchMode('clock',0)">CLOCK</button>
+        <button class="mode-btn" id="modeBtn1" onclick="switchMode('pomodoro',1)">POMODORO</button>
+        <button class="mode-btn" id="modeBtn2" onclick="switchMode('flip',2)">TIMER</button>
+    </div>
+</div>
+
+</body>
+</html>
